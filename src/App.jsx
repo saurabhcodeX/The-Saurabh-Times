@@ -1,4 +1,4 @@
-import {
+
   useCallback,
   useEffect,
   useState,
@@ -25,6 +25,8 @@ import "./index.css";
 ===================================================== */
 
 function Header({ onPrint }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const scrollToSection = useCallback((id) => {
     const element = document.getElementById(id);
 
@@ -34,6 +36,8 @@ function Header({ onPrint }) {
       behavior: "smooth",
       block: "start",
     });
+
+    setMenuOpen(false);
   }, []);
 
   return (
@@ -97,6 +101,40 @@ function Header({ onPrint }) {
         </button>
 
       </div>
+
+      <div className="mobile-menu-row">
+        <button
+          type="button"
+          className={`mobile-menu-button${menuOpen ? " active" : ""}`}
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
+          aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+        >
+          <span />
+          <span />
+        </button>
+      </div>
+
+      {menuOpen && (
+        <nav className="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation">
+          <button type="button" onClick={() => scrollToSection("work")}>
+            01 / SELECTED WORK
+          </button>
+          <button type="button" onClick={() => scrollToSection("about")}>
+            02 / ABOUT
+          </button>
+          <button type="button" onClick={() => scrollToSection("archive")}>
+            03 / ARCHIVE
+          </button>
+          <button type="button" onClick={() => scrollToSection("contact")}>
+            04 / CONTACT
+          </button>
+          <button type="button" onClick={onPrint}>
+            05 / PRINT EDITION
+          </button>
+        </nav>
+      )}
 
     </header>
   );
