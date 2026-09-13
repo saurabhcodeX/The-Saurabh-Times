@@ -1,4 +1,4 @@
-
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&display=swap");
 
 :root {
   --paper: #eee8dc;
@@ -3584,5 +3584,99 @@ button,
   .editorial-project,
   .archive-row {
     -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* =====================================================
+   MOBILE POLISH v2
+   Full masthead + clearer menu + tighter project images
+===================================================== */
+@media (max-width: 700px) {
+  .masthead {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+    padding: 0 62px;
+  }
+
+  .masthead-title {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+    text-align: center;
+    font-size: clamp(17px, 5.4vw, 22px);
+    letter-spacing: -0.055em;
+  }
+
+  .masthead-small {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 54px;
+    overflow: hidden;
+    white-space: normal;
+  }
+
+  .masthead-small:first-child {
+    left: 0;
+  }
+
+  .masthead-small:last-child {
+    right: 0;
+  }
+
+  .mobile-menu-row {
+    min-height: 38px;
+    align-items: center;
+  }
+
+  .mobile-menu-button {
+    position: relative;
+    width: 48px;
+    height: 38px;
+    border: 0;
+    background: transparent;
+  }
+
+  .mobile-menu-button span {
+    width: 19px;
+    height: 2px;
+    background: var(--ink);
+    transition: transform 0.18s ease;
+  }
+
+  .mobile-menu-button.active span:first-child {
+    transform: translateY(3.5px) rotate(45deg);
+  }
+
+  .mobile-menu-button.active span:last-child {
+    transform: translateY(-3.5px) rotate(-45deg);
+  }
+
+  .editorial-project-image img {
+    aspect-ratio: 1.72;
+    max-height: 190px;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 380px) {
+  .masthead {
+    padding: 0 54px;
+  }
+
+  .masthead-title {
+    font-size: 17px;
+  }
+
+  .masthead-small {
+    max-width: 47px;
+    font-size: 5px;
   }
 }
