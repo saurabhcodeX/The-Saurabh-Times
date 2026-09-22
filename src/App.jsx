@@ -61,10 +61,12 @@ function Header({ onPrint }) {
         <button
           type="button"
           className="masthead-title masthead-button"
-          onClick={() => window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          })}
+          onClick={() =>
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            })
+          }
         >
           THE SAURABH TIMES
         </button>
@@ -78,7 +80,6 @@ function Header({ onPrint }) {
         </button>
 
       </div>
-
 
       <div className="header-meta">
 
@@ -108,34 +109,65 @@ function Header({ onPrint }) {
       </div>
 
       <div className="mobile-menu-row">
+
         <button
           type="button"
-          className={`mobile-menu-button${menuOpen ? " active" : ""}`}
+          className={`mobile-menu-button${
+            menuOpen ? " active" : ""
+          }`}
           onClick={() => setMenuOpen((open) => !open)}
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
-          aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+          aria-label={
+            menuOpen
+              ? "Close navigation"
+              : "Open navigation"
+          }
         >
           <span />
           <span />
         </button>
+
       </div>
 
       {menuOpen && (
-        <nav className="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation">
-          <button type="button" onClick={() => scrollToSection("work")}>
+        <nav
+          className="mobile-nav"
+          id="mobile-navigation"
+          aria-label="Mobile navigation"
+        >
+          <button
+            type="button"
+            onClick={() => scrollToSection("work")}
+          >
             01 / SELECTED WORK
           </button>
-          <button type="button" onClick={() => scrollToSection("about")}>
+
+          <button
+            type="button"
+            onClick={() => scrollToSection("about")}
+          >
             02 / ABOUT
           </button>
-          <button type="button" onClick={() => scrollToSection("archive")}>
+
+          <button
+            type="button"
+            onClick={() => scrollToSection("archive")}
+          >
             03 / ARCHIVE
           </button>
-          <button type="button" onClick={() => scrollToSection("contact")}>
+
+          <button
+            type="button"
+            onClick={() => scrollToSection("contact")}
+          >
             04 / CONTACT
           </button>
-          <button type="button" onClick={onPrint}>
+
+          <button
+            type="button"
+            onClick={onPrint}
+          >
             05 / PRINT EDITION
           </button>
         </nav>
@@ -144,7 +176,6 @@ function Header({ onPrint }) {
     </header>
   );
 }
-
 
 /* =====================================================
    HERO
@@ -165,7 +196,6 @@ function Hero() {
         </span>
 
       </div>
-
 
       <div className="hero-grid">
 
@@ -191,7 +221,6 @@ function Hero() {
 
         </div>
 
-
         <div className="hero-side">
 
           <div className="portrait-frame">
@@ -204,7 +233,6 @@ function Hero() {
             />
 
           </div>
-
 
           <div className="portrait-caption">
 
@@ -222,7 +250,6 @@ function Hero() {
 
       </div>
 
-
       <div className="hero-bottom">
 
         <span>
@@ -238,7 +265,6 @@ function Hero() {
     </section>
   );
 }
-
 
 /* =====================================================
    TICKER
@@ -283,7 +309,6 @@ function Ticker() {
   );
 }
 
-
 /* =====================================================
    PROJECT CARD
 ===================================================== */
@@ -295,7 +320,6 @@ function ProjectCard({
   const handleOpen = useCallback(() => {
     onOpen(project);
   }, [onOpen, project]);
-
 
   return (
     <m.article
@@ -334,7 +358,6 @@ function ProjectCard({
         {project.number}
       </div>
 
-
       <div className="editorial-project-main">
 
         <div className="editorial-project-meta">
@@ -349,17 +372,14 @@ function ProjectCard({
 
         </div>
 
-
         <h3>
           {project.title}
         </h3>
-
 
         <p>
           {project.headline ||
             project.subtitle}
         </p>
-
 
         <div className="editorial-project-tech">
 
@@ -374,7 +394,6 @@ function ProjectCard({
         </div>
 
       </div>
-
 
       <div className="editorial-project-image">
 
@@ -399,7 +418,6 @@ function ProjectCard({
 
       </div>
 
-
       <div
         className="editorial-project-arrow"
         aria-hidden="true"
@@ -410,7 +428,6 @@ function ProjectCard({
     </m.article>
   );
 }
-
 
 /* =====================================================
    SELECTED WORK
@@ -437,14 +454,12 @@ function FeaturedWork({ onOpen }) {
 
         </div>
 
-
         <p>
           A selection of digital products,
           interfaces, experiments and research.
         </p>
 
       </div>
-
 
       <div className="editorial-projects">
 
@@ -461,7 +476,6 @@ function FeaturedWork({ onOpen }) {
     </section>
   );
 }
-
 
 /* =====================================================
    ABOUT
@@ -490,7 +504,6 @@ function About() {
 
       </div>
 
-
       <div className="about-grid">
 
         <div className="about-title">
@@ -502,7 +515,6 @@ function About() {
           </h2>
 
         </div>
-
 
         <div className="about-copy">
 
@@ -533,7 +545,6 @@ function About() {
     </section>
   );
 }
-
 
 /* =====================================================
    SKILLS
@@ -572,7 +583,6 @@ function Skills() {
 
       </div>
 
-
       <div className="skills-grid">
 
         {skills.map((skill, index) => (
@@ -601,7 +611,6 @@ function Skills() {
   );
 }
 
-
 /* =====================================================
    ARCHIVE
    Uses the SAME projects array.
@@ -629,14 +638,12 @@ function Archive({ onOpen }) {
 
         </div>
 
-
         <p>
           The complete project and research
           index.
         </p>
 
       </div>
-
 
       <div className="archive-table">
 
@@ -659,7 +666,6 @@ function Archive({ onOpen }) {
           </span>
 
         </div>
-
 
         {projects.map((project) => (
 
@@ -696,7 +702,6 @@ function Archive({ onOpen }) {
     </section>
   );
 }
-
 
 /* =====================================================
    CLASSIFIEDS
@@ -746,13 +751,11 @@ function Classifieds() {
 
         </div>
 
-
         <p>
           Small ads · Big ideas.
         </p>
 
       </div>
-
 
       <div className="classifieds-grid">
 
@@ -787,7 +790,6 @@ function Classifieds() {
   );
 }
 
-
 /* =====================================================
    CONTACT
 ===================================================== */
@@ -802,7 +804,6 @@ function Contact() {
       <div className="contact-label">
         06 / CONTACT
       </div>
-
 
       <div className="contact-header">
 
@@ -821,7 +822,6 @@ function Contact() {
           </h2>
 
         </div>
-
 
         <div className="contact-note">
 
@@ -843,14 +843,12 @@ function Contact() {
 
       </div>
 
-
       <div className="contact-intro">
 
         <p>
           Have an idea, project or opportunity?
           I'd be happy to hear from you.
         </p>
-
 
         <a
           href="mailto:saurabhpandey1344@gmail.com"
@@ -865,7 +863,6 @@ function Contact() {
         </a>
 
       </div>
-
 
       <div className="contact-links">
 
@@ -888,7 +885,6 @@ function Contact() {
 
         </a>
 
-
         <a
           href="https://github.com/saurabhcodeX"
           target="_blank"
@@ -910,7 +906,6 @@ function Contact() {
 
         </a>
 
-
         <a
           href="https://www.linkedin.com/in/saurabh-kumar-pandey-234324321/"
           target="_blank"
@@ -931,7 +926,6 @@ function Contact() {
           </span>
 
         </a>
-
 
         <a
           href="/resume.pdf"
@@ -960,7 +954,6 @@ function Contact() {
   );
 }
 
-
 /* =====================================================
    FOOTER
 ===================================================== */
@@ -987,7 +980,6 @@ function Footer({ onPrint }) {
 
       </div>
 
-
       <div className="footer-bottom">
 
         <span>
@@ -1011,7 +1003,6 @@ function Footer({ onPrint }) {
   );
 }
 
-
 /* =====================================================
    APP
 ===================================================== */
@@ -1022,7 +1013,6 @@ export default function App() {
     activeProject,
     setActiveProject,
   ] = useState(null);
-
 
   /* -----------------------------------------------
      Open project
@@ -1035,7 +1025,6 @@ export default function App() {
     []
   );
 
-
   /* -----------------------------------------------
      Close project
   ------------------------------------------------ */
@@ -1044,10 +1033,9 @@ export default function App() {
     setActiveProject(null);
   }, []);
 
-
   /* -----------------------------------------------
      Native print
-     
+
      The actual newspaper transformation is handled
      by @media print in index.css.
   ------------------------------------------------ */
@@ -1058,14 +1046,11 @@ export default function App() {
       setActiveProject(null);
     }
 
-    // Give React one frame to remove the modal
-    // before opening the browser print dialog.
     requestAnimationFrame(() => {
       window.print();
     });
 
   }, [activeProject]);
-
 
   /* -----------------------------------------------
      Lock background scrolling while story is open
@@ -1090,10 +1075,8 @@ export default function App() {
 
   }, [activeProject]);
 
-
   /* -----------------------------------------------
      Keep Escape handling at application level
-     as an additional safety net.
   ------------------------------------------------ */
 
   useEffect(() => {
@@ -1125,17 +1108,14 @@ export default function App() {
     closeProject,
   ]);
 
-
   return (
     <LazyMotion features={domAnimation}>
 
       <CustomCursor />
 
-
       <Header
         onPrint={handlePrint}
       />
-
 
       <main>
 
@@ -1143,54 +1123,38 @@ export default function App() {
 
         <Ticker />
 
+        {/* =========================================
+            MINI GLOBAL EDITION
 
-        <Suspense
-          fallback={
-            <section className="global-edition global-edition-loading">
-              <div className="global-edition-frame">
-                <div className="global-edition-loading-inner">
-                  <span>02 / GLOBAL EDITION</span>
-                  <strong>PREPARING THE ATLAS...</strong>
-                </div>
-              </div>
-            </section>
-          }
-        >
-          <GlobalEdition
-            projects={projects}
-            onOpen={openProject}
-          />
+            Small boxed 3D globe.
+            No large loading screen.
+        ========================================= */}
+
+        <Suspense fallback={null}>
+          <GlobalEdition />
         </Suspense>
-
 
         <FeaturedWork
           onOpen={openProject}
         />
 
-
         <About />
 
-
         <Skills />
-
 
         <Archive
           onOpen={openProject}
         />
 
-
         <Classifieds />
-
 
         <Contact />
 
       </main>
 
-
       <Footer
         onPrint={handlePrint}
       />
-
 
       {/* -------------------------------------------
           Only the selected project gets rendered.

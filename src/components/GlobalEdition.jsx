@@ -1,24 +1,17 @@
 import { Suspense, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import {
-  OrbitControls,
-  Stars,
-  useTexture,
-} from "@react-three/drei";
+import { OrbitControls, Stars, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 const EARTH_TEXTURE =
   "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r186/examples/textures/planets/earth_atmos_2048.jpg";
-
 const EARTH_NORMAL =
   "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r186/examples/textures/planets/earth_normal_2048.jpg";
-
 const EARTH_LIGHTS =
   "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r186/examples/textures/planets/earth_lights_2048.png";
 
 function Earth() {
-  const earthRef = useRef();
-
+  const earthRef = useRef(null);
   const [earthMap, normalMap, lightsMap] = useTexture([
     EARTH_TEXTURE,
     EARTH_NORMAL,
@@ -26,46 +19,38 @@ function Earth() {
   ]);
 
   useFrame((_, delta) => {
-    if (earthRef.current) {
-      earthRef.current.rotation.y += delta * 0.12;
-    }
+    if (earthRef.current) earthRef.current.rotation.y += delta * 0.16;
   });
 
   return (
     <group ref={earthRef}>
-      {/* Earth */}
       <mesh>
-        <sphereGeometry args={[1.35, 64, 64]} />
-
+        <sphereGeometry args={[1.28, 64, 64]} />
         <meshPhongMaterial
           map={earthMap}
           normalMap={normalMap}
-          normalScale={new THREE.Vector2(0.35, 0.35)}
-          specular={new THREE.Color("#333333")}
-          shininess={8}
+          normalScale={new THREE.Vector2(0.3, 0.3)}
+          specular={new THREE.Color("#222222")}
+          shininess={12}
         />
       </mesh>
 
-      {/* Night lights */}
-      <mesh scale={1.003}>
-        <sphereGeometry args={[1.35, 64, 64]} />
-
+      <mesh scale={1.004}>
+        <sphereGeometry args={[1.28, 64, 64]} />
         <meshBasicMaterial
           map={lightsMap}
           transparent
-          opacity={0.7}
+          opacity={0.55}
           blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* Atmosphere */}
-      <mesh scale={1.075}>
-        <sphereGeometry args={[1.35, 64, 64]} />
-
+      <mesh scale={1.065}>
+        <sphereGeometry args={[1.28, 64, 64]} />
         <meshBasicMaterial
           color="#4da6ff"
           transparent
-          opacity={0.12}
+          opacity={0.14}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
         />
@@ -77,34 +62,33 @@ function Earth() {
 function GlobeScene() {
   return (
     <>
-      <ambientLight intensity={0.45} />
-
-      <directionalLight
-        position={[4, 2, 5]}
-        intensity={2}
-      />
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[4, 3, 5]} intensity={2.4} />
 
       <Stars
-        radius={8}
+        radius={7}
         depth={5}
-        count={700}
-        factor={1.2}
+        count={900}
+        factor={1.15}
         saturation={0}
         fade
-        speed={0.25}
+        speed={0.2}
       />
 
       <Earth />
 
       <OrbitControls
         enablePan={false}
-        enableZoom={true}
-        minDistance={3.4}
-        maxDistance={5}
-        rotateSpeed={0.5}
-        zoomSpeed={0.5}
+        enableZoom
+        enableRotate
         enableDamping
-        dampingFactor={0.05}
+        dampingFactor={0.045}
+        rotateSpeed={0.55}
+        zoomSpeed={0.55}
+        minDistance={3.2}
+        maxDistance={5}
+        minPolarAngle={Math.PI * 0.25}
+        maxPolarAngle={Math.PI * 0.75}
       />
     </>
   );
@@ -112,19 +96,16 @@ function GlobeScene() {
 
 export default function GlobalEdition() {
   return (
-    <section className="global-mini-section">
+    <section className="global-mini-section" aria-label="Global Edition">
       <div className="global-mini-box">
         <div className="global-mini-top">
           <span>GLOBAL EDITION</span>
-          <span>03 / 06</span>
+          <span className="global-mini-live"><i /> LIVE</span>
         </div>
 
         <div className="global-mini-globe">
           <Canvas
-            camera={{
-              position: [0, 0, 4.2],
-              fov: 38,
-            }}
+            camera={{ position: [0, 0, 4.1], fov: 36 }}
             dpr={[1, 1.5]}
             gl={{
               antialias: true,
@@ -139,12 +120,13 @@ export default function GlobalEdition() {
         </div>
 
         <div className="global-mini-bottom">
-          <div>
-            <strong>FROM CHANDIGARH</strong>
-            <span>TO THE DIGITAL WORLD</span>
+          <div className="global-mini-copy">
+            <span className="global-mini-kicker">ORIGIN POINT</span>
+            <strong>
+              CHANDIGARH <span>→</span> DIGITAL WORLD
+            </strong>
           </div>
-
-          <span className="global-mini-arrow">↗</span>
+          <div className="global-mini-hint">DRAG / ZOOM</div>
         </div>
       </div>
     </section>
