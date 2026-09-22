@@ -6,7 +6,10 @@ import {
   useState,
 } from "react";
 
-import { Canvas } from "@react-three/fiber";
+import {
+  Canvas,
+  useFrame,
+} from "@react-three/fiber";
 
 import {
   Html,
@@ -18,12 +21,12 @@ import {
 
 import * as THREE from "three";
 
-/*
-=====================================================
-GLOBAL EDITION
-Interactive editorial globe for The Saurabh Times
-=====================================================
-*/
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const EARTH_RADIUS = 1.55;
 
 const EARTH_TEXTURE =
   "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r186/examples/textures/planets/earth_atmos_2048.jpg";
@@ -31,26 +34,36 @@ const EARTH_TEXTURE =
 const EARTH_NORMAL =
   "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r186/examples/textures/planets/earth_normal_2048.jpg";
 
-const EARTH_RADIUS = 1.55;
+const EARTH_LIGHTS =
+  "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r186/examples/textures/planets/earth_lights_2048.png";
 
-/*
-=====================================================
-UTILITIES
-=====================================================
-*/
+const EARTH_CLOUDS =
+  "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r186/examples/textures/planets/earth_clouds_1024.png";
+
+
+/* =====================================================
+   GEO HELPERS
+===================================================== */
 
 function latLngToVector3(
-  latitude,
-  longitude,
+  lat,
+  lng,
   radius = EARTH_RADIUS
 ) {
-  const phi = (90 - latitude) * (Math.PI / 180);
-  const theta = (longitude + 180) * (Math.PI / 180);
+  const phi =
+    (90 - lat) *
+    (Math.PI / 180);
+
+  const theta =
+    (lng + 180) *
+    (Math.PI / 180);
 
   return new THREE.Vector3(
-    -radius *
+    -(
+      radius *
       Math.sin(phi) *
-      Math.cos(theta),
+      Math.cos(theta)
+    ),
 
     radius * Math.cos(phi),
 
@@ -60,263 +73,54 @@ function latLngToVector3(
   );
 }
 
-function createArc(start, end) {
-  const startPoint = latLngToVector3(
-    start.lat,
-    start.lng,
-    EARTH_RADIUS + 0.035
-  );
 
-  const endPoint = latLngToVector3(
-    end.lat,
-    end.lng,
-    EARTH_RADIUS + 0.035
-  );
+function createArc(
+  start,
+  end,
+  radius = EARTH_RADIUS
+) {
+  const startPoint =
+    latLngToVector3(
+      start.lat,
+      start.lng,
+      radius + 0.025
+    );
 
-  const midpoint = startPoint
-    .clone()
-    .add(endPoint)
-    .normalize()
-    .multiplyScalar(EARTH_RADIUS + 0.34);
+  const endPoint =
+    latLngToVector3(
+      end.lat,
+      end.lng,
+      radius + 0.025
+    );
+
+  const middle =
+    startPoint
+      .clone()
+      .add(endPoint)
+      .normalize()
+      .multiplyScalar(
+        radius + 0.42
+      );
 
   const curve =
     new THREE.QuadraticBezierCurve3(
       startPoint,
-      midpoint,
+      middle,
       endPoint
     );
 
-  return curve.getPoints(30);
+  return curve.getPoints(48);
 }
 
-/*
-=====================================================
-ATMOSPHERE
-=====================================================
-*/
 
-function EarthAtmosphere() {
+/* =====================================================
+   ATMOSPHERE
+===================================================== */
+
+function Atmosphere() {
   return (
-    <mesh scale={1.045}>
-      <sphereGeometry
-        args={[EARTH_RADIUS, 48, 48]}
-      />
-
-      <meshBasicMaterial
-        color="#76aee8"
-        transparent
-        opacity={0.13}
-        side={THREE.BackSide}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </mesh>
-  );
-}
-
-/*
-=====================================================
-MARKER
-=====================================================
-*/
-
-function ProjectMarker({
-  project,
-  onOpen,
-}) {
-  const [hovered, setHovered] =
-    useState(false);
-
-  const position = useMemo(
-    () =>
-      latLngToVector3(
-        project.location.lat,
-        project.location.lng,
-        EARTH_RADIUS + 0.045
-      ),
-    [project.location]
-  );
-
-  const handlePointerOver = (event) => {
-    event.stopPropagation();
-
-    setHovered(true);
-
-    document.body.style.cursor =
-      "pointer";
-  };
-
-  const handlePointerOut = () => {
-    setHovered(false);
-
-    document.body.style.cursor =
-      "";
-  };
-
-  const handleClick = (event) => {
-    event.stopPropagation();
-
-    setHovered(false);
-
-    document.body.style.cursor =
-      "";
-
-    onOpen(project);
-  };
-
-  return (
-    <group position={position}>
-      {/* Main glowing point */}
-      <mesh
-        scale={hovered ? 1.55 : 1}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-        onClick={handleClick}
-      >
-        <sphereGeometry
-          args={[0.045, 16, 16]}
-        />
-
-        <meshStandardMaterial
-          color="#e45a50"
-          emissive="#9d251d"
-          emissiveIntensity={
-            hovered ? 2.5 : 1.35
-          }
-          roughness={0.3}
-        />
-      </mesh>
-
-      {/* Soft glow */}
-      <mesh
-        scale={hovered ? 2.3 : 1.65}
-        raycast={() => null}
-      >
-        <sphereGeometry
-          args={[0.045, 12, 12]}
-        />
-
-        <meshBasicMaterial
-          color="#e45a50"
-          transparent
-          opacity={0.16}
-          blending={
-            THREE.AdditiveBlending
-          }
-          depthWrite={false}
-        />
-      </mesh>
-
-      {/* Editorial label */}
-      <Html
-        center
-        distanceFactor={5.2}
-        occlude
-        style={{
-          pointerEvents: "none",
-          whiteSpace: "nowrap",
-          transform:
-            "translateY(-20px)",
-        }}
-      >
-        <div
-          className={`global-edition-marker-label${
-            hovered
-              ? " is-active"
-              : ""
-          }`}
-        >
-          <span>
-            {project.number}
-          </span>
-
-          <strong>
-            {project.location.label}
-          </strong>
-        </div>
-      </Html>
-    </group>
-  );
-}
-
-/*
-=====================================================
-EARTH
-=====================================================
-*/
-
-function Earth({
-  projects,
-  onOpen,
-}) {
-  const [
-    earthTexture,
-    normalTexture,
-  ] = useTexture([
-    EARTH_TEXTURE,
-    EARTH_NORMAL,
-  ]);
-
-  useEffect(() => {
-    earthTexture.colorSpace =
-      THREE.SRGBColorSpace;
-
-    earthTexture.anisotropy = 2;
-
-    normalTexture.anisotropy = 2;
-  }, [
-    earthTexture,
-    normalTexture,
-  ]);
-
-  /*
-  Connect unique locations.
-  This avoids drawing five identical arcs
-  when multiple projects share Chandigarh.
-  */
-  const arcs = useMemo(() => {
-    const unique = [];
-    const seen = new Set();
-
-    projects.forEach((project) => {
-      const key =
-        `${project.location.lat}:` +
-        `${project.location.lng}`;
-
-      if (!seen.has(key)) {
-        seen.add(key);
-        unique.push(project);
-      }
-    });
-
-    return unique
-      .slice(0, 4)
-      .flatMap((project, index) => {
-        const next =
-          unique[index + 1];
-
-        if (!next) {
-          return [];
-        }
-
-        return [
-          {
-            id:
-              `${project.id}-${next.id}`,
-
-            points: createArc(
-              project.location,
-              next.location
-            ),
-          },
-        ];
-      });
-  }, [projects]);
-
-  return (
-    <group>
-      {/* Earth */}
-      <mesh rotation={[0, -0.42, 0]}>
+    <>
+      <mesh scale={1.055}>
         <sphereGeometry
           args={[
             EARTH_RADIUS,
@@ -325,162 +129,771 @@ function Earth({
           ]}
         />
 
-        <meshStandardMaterial
-          map={earthTexture}
-          normalMap={normalTexture}
-          normalScale={
-            new THREE.Vector2(
-              0.42,
-              0.42
-            )
+        <meshBasicMaterial
+          color="#4d8dff"
+          transparent
+          opacity={0.085}
+          side={THREE.BackSide}
+          blending={
+            THREE.AdditiveBlending
           }
-          roughness={0.84}
-          metalness={0.03}
+          depthWrite={false}
         />
       </mesh>
 
-      {/* Atmospheric shell */}
-      <EarthAtmosphere />
 
-      {/* Project connection arcs */}
-      {arcs.map((arc) => (
-        <Line
-          key={arc.id}
-          points={arc.points}
-          color="#d26a62"
+      <mesh scale={1.085}>
+        <sphereGeometry
+          args={[
+            EARTH_RADIUS,
+            64,
+            48,
+          ]}
+        />
+
+        <meshBasicMaterial
+          color="#7db7ff"
           transparent
-          opacity={0.42}
-          lineWidth={1}
+          opacity={0.035}
+          side={THREE.BackSide}
+          blending={
+            THREE.AdditiveBlending
+          }
+          depthWrite={false}
         />
-      ))}
+      </mesh>
+    </>
+  );
+}
 
-      {/* Project markers */}
-      {projects.map((project) => (
-        <ProjectMarker
-          key={project.id}
-          project={project}
-          onOpen={onOpen}
+
+/* =====================================================
+   CLOUD LAYER
+===================================================== */
+
+function CloudLayer() {
+  const clouds =
+    useTexture(EARTH_CLOUDS);
+
+  const cloudRef =
+    useRef(null);
+
+  useEffect(() => {
+    clouds.colorSpace =
+      THREE.SRGBColorSpace;
+  }, [clouds]);
+
+
+  useFrame((_, delta) => {
+    if (!cloudRef.current) {
+      return;
+    }
+
+    cloudRef.current.rotation.y +=
+      delta * 0.006;
+  });
+
+
+  return (
+    <mesh
+      ref={cloudRef}
+      scale={1.012}
+    >
+      <sphereGeometry
+        args={[
+          EARTH_RADIUS,
+          64,
+          48,
+        ]}
+      />
+
+      <meshPhongMaterial
+        map={clouds}
+        transparent
+        opacity={0.18}
+        depthWrite={false}
+        blending={
+          THREE.AdditiveBlending
+        }
+      />
+    </mesh>
+  );
+}
+
+
+/* =====================================================
+   EARTH SURFACE
+===================================================== */
+
+function EarthSurface() {
+  const [
+    dayTexture,
+    normalTexture,
+    lightsTexture,
+  ] = useTexture([
+    EARTH_TEXTURE,
+    EARTH_NORMAL,
+    EARTH_LIGHTS,
+  ]);
+
+
+  const normalScale =
+    useMemo(
+      () =>
+        new THREE.Vector2(
+          0.65,
+          0.65
+        ),
+      []
+    );
+
+
+  const emissiveColor =
+    useMemo(
+      () =>
+        new THREE.Color(
+          "#ffb35c"
+        ),
+      []
+    );
+
+
+  useEffect(() => {
+    dayTexture.colorSpace =
+      THREE.SRGBColorSpace;
+
+    lightsTexture.colorSpace =
+      THREE.SRGBColorSpace;
+  }, [
+    dayTexture,
+    lightsTexture,
+  ]);
+
+
+  return (
+    <mesh>
+      <sphereGeometry
+        args={[
+          EARTH_RADIUS,
+          64,
+          48,
+        ]}
+      />
+
+      <meshStandardMaterial
+        map={dayTexture}
+        normalMap={normalTexture}
+        normalScale={normalScale}
+        roughness={0.92}
+        metalness={0}
+        emissive={emissiveColor}
+        emissiveMap={lightsTexture}
+        emissiveIntensity={0.85}
+      />
+    </mesh>
+  );
+}
+
+
+/* =====================================================
+   GLOBE HALO
+===================================================== */
+
+function GlobeHalo() {
+  return (
+    <mesh scale={1.18}>
+      <sphereGeometry
+        args={[
+          EARTH_RADIUS,
+          32,
+          24,
+        ]}
+      />
+
+      <meshBasicMaterial
+        color="#173b75"
+        transparent
+        opacity={0.025}
+        side={THREE.BackSide}
+        blending={
+          THREE.AdditiveBlending
+        }
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+
+/* =====================================================
+   PROJECT MARKER
+===================================================== */
+
+function ProjectMarker({
+  project,
+  onOpen,
+  active,
+  onHover,
+}) {
+  const [hovered, setHovered] =
+    useState(false);
+
+  const groupRef =
+    useRef(null);
+
+  const pulseRef =
+    useRef(null);
+
+
+  const position = useMemo(() => {
+    if (!project.location) {
+      return [0, 0, 0];
+    }
+
+    return latLngToVector3(
+      project.location.lat,
+      project.location.lng,
+      EARTH_RADIUS + 0.075
+    ).toArray();
+  }, [project.location]);
+
+
+  useFrame((state) => {
+    if (!pulseRef.current) {
+      return;
+    }
+
+    const time =
+      state.clock.elapsedTime;
+
+    const pulse =
+      1 +
+      Math.sin(
+        time * 3.1 +
+          project.id.length
+      ) *
+        0.16;
+
+    pulseRef.current.scale.setScalar(
+      pulse
+    );
+
+    pulseRef.current.material.opacity =
+      0.2 +
+      (
+        Math.sin(
+          time * 3.1 +
+            project.id.length
+        ) +
+        1
+      ) *
+        0.08;
+
+
+    if (groupRef.current) {
+      const target =
+        hovered || active
+          ? 1.22
+          : 1;
+
+      groupRef.current.scale.lerp(
+        new THREE.Vector3(
+          target,
+          target,
+          target
+        ),
+        0.14
+      );
+    }
+  });
+
+
+  if (!project.location) {
+    return null;
+  }
+
+
+  const isActive =
+    hovered || active;
+
+
+  return (
+    <group
+      ref={groupRef}
+      position={position}
+
+      onPointerEnter={(event) => {
+        event.stopPropagation();
+
+        setHovered(true);
+
+        onHover?.(project);
+
+        document.body.style.cursor =
+          "pointer";
+      }}
+
+      onPointerLeave={() => {
+        setHovered(false);
+
+        onHover?.(null);
+
+        document.body.style.cursor =
+          "";
+      }}
+
+      onClick={(event) => {
+        event.stopPropagation();
+
+        onOpen?.(project);
+      }}
+    >
+
+      {/* =========================================
+          OUTER PULSE
+      ========================================= */}
+
+      <mesh ref={pulseRef}>
+        <sphereGeometry
+          args={[
+            0.075,
+            16,
+            16,
+          ]}
         />
-      ))}
+
+        <meshBasicMaterial
+          color="#ff3b2f"
+          transparent
+          opacity={0.28}
+          blending={
+            THREE.AdditiveBlending
+          }
+          depthWrite={false}
+        />
+      </mesh>
+
+
+      {/* =========================================
+          CORE
+      ========================================= */}
+
+      <mesh>
+        <sphereGeometry
+          args={[
+            isActive
+              ? 0.055
+              : 0.038,
+            20,
+            20,
+          ]}
+        />
+
+        <meshBasicMaterial
+          color={
+            isActive
+              ? "#ffffff"
+              : "#ff3b2f"
+          }
+        />
+      </mesh>
+
+
+      {/* =========================================
+          VERTICAL BEAM
+      ========================================= */}
+
+      <mesh
+        position={[
+          0,
+          0.075,
+          0,
+        ]}
+      >
+        <cylinderGeometry
+          args={[
+            0.006,
+            0.006,
+            0.14,
+            8,
+          ]}
+        />
+
+        <meshBasicMaterial
+          color="#ff4b40"
+          transparent
+          opacity={0.65}
+        />
+      </mesh>
+
+
+      {/* =========================================
+          LABEL
+      ========================================= */}
+
+      <Html
+        distanceFactor={5.2}
+        position={[
+          0.075,
+          0.11,
+          0,
+        ]}
+        center={false}
+        zIndexRange={[
+          20,
+          0,
+        ]}
+      >
+        <div
+          className={
+            `global-edition-marker-label${
+              isActive
+                ? " is-active"
+                : ""
+            }`
+          }
+        >
+          <span className="marker-index">
+            {project.number}
+          </span>
+
+          <span className="marker-title">
+            {project.title}
+          </span>
+
+          <span className="marker-location">
+            {project.location.label}
+          </span>
+        </div>
+      </Html>
+
     </group>
   );
 }
 
-/*
-=====================================================
-GLOBE SCENE
-=====================================================
-*/
+
+/* =====================================================
+   PROJECT ARCS
+===================================================== */
+
+function GlobeArcs({
+  projects,
+}) {
+  const arcs = useMemo(() => {
+    const locations =
+      projects
+        .filter(
+          (project) =>
+            project.location
+        )
+        .map(
+          (project) =>
+            project.location
+        );
+
+
+    const unique =
+      locations.filter(
+        (
+          location,
+          index,
+          array
+        ) =>
+          index ===
+          array.findIndex(
+            (item) =>
+              item.lat ===
+                location.lat &&
+              item.lng ===
+                location.lng
+          )
+      );
+
+
+    if (unique.length < 2) {
+      return [];
+    }
+
+
+    const result = [];
+
+
+    for (
+      let i = 0;
+      i < unique.length - 1;
+      i += 1
+    ) {
+      result.push({
+        key: `${i}-${i + 1}`,
+
+        points: createArc(
+          unique[i],
+          unique[i + 1]
+        ),
+      });
+    }
+
+
+    if (unique.length > 2) {
+      result.push({
+        key: "closing-arc",
+
+        points: createArc(
+          unique[
+            unique.length - 1
+          ],
+          unique[0]
+        ),
+      });
+    }
+
+
+    return result;
+  }, [projects]);
+
+
+  return (
+    <>
+      {arcs.map((arc) => (
+        <Line
+          key={arc.key}
+          points={arc.points}
+          color="#d84b42"
+          transparent
+          opacity={0.32}
+          lineWidth={0.75}
+        />
+      ))}
+    </>
+  );
+}
+
+
+/* =====================================================
+   EARTH
+===================================================== */
+
+function Earth({
+  projects,
+  onOpen,
+  hoveredProject,
+  setHoveredProject,
+}) {
+  return (
+    <group>
+      <EarthSurface />
+
+      <CloudLayer />
+
+      <GlobeHalo />
+
+      <Atmosphere />
+
+      <GlobeArcs
+        projects={projects}
+      />
+
+
+      {projects.map(
+        (project) => (
+          <ProjectMarker
+            key={project.id}
+            project={project}
+            onOpen={onOpen}
+            active={
+              hoveredProject?.id ===
+              project.id
+            }
+            onHover={
+              setHoveredProject
+            }
+          />
+        )
+      )}
+    </group>
+  );
+}
+
+
+/* =====================================================
+   GLOBE SCENE
+===================================================== */
 
 function GlobeScene({
   projects,
   onOpen,
+  interacting,
   onInteractionStart,
   onInteractionEnd,
+  hoveredProject,
+  setHoveredProject,
 }) {
   return (
     <>
+      {/* =========================================
+          SPACE BACKGROUND
+      ========================================= */}
+
       <color
         attach="background"
-        args={["#05070a"]}
+        args={["#05070b"]}
       />
 
-      {/* Lighting */}
+
+      {/* =========================================
+          LIGHTING
+      ========================================= */}
+
       <ambientLight
-        intensity={0.58}
+        intensity={0.18}
       />
+
 
       <directionalLight
-        position={[4, 3, 5]}
-        intensity={2.3}
-        color="#f5f0e7"
+        position={[
+          -4,
+          2,
+          5,
+        ]}
+        intensity={2.5}
+        color="#ffffff"
       />
 
-      <pointLight
-        position={[-4, -2, -4]}
-        intensity={0.9}
-        color="#456b95"
+
+      <directionalLight
+        position={[
+          4,
+          -1,
+          -3,
+        ]}
+        intensity={0.45}
+        color="#5b7fc4"
       />
 
-      {/* Space */}
+
+      {/* =========================================
+          STARS
+      ========================================= */}
+
       <Stars
         radius={18}
-        depth={18}
-        count={650}
-        factor={1.6}
+        depth={12}
+        count={850}
+        factor={2.1}
         saturation={0}
         fade
-        speed={0.16}
+        speed={0.18}
       />
 
-      <Suspense fallback={null}>
-        <Earth
-          projects={projects}
-          onOpen={onOpen}
-        />
-      </Suspense>
 
-      {/* Camera interaction */}
+      {/* =========================================
+          EARTH
+      ========================================= */}
+
+      <Earth
+        projects={projects}
+        onOpen={onOpen}
+        hoveredProject={
+          hoveredProject
+        }
+        setHoveredProject={
+          setHoveredProject
+        }
+      />
+
+
+      {/* =========================================
+          CONTROLS
+      ========================================= */}
+
       <OrbitControls
+        makeDefault
+
         enablePan={false}
+
         enableDamping
-        dampingFactor={0.055}
 
-        minDistance={3.25}
-        maxDistance={5.7}
+        dampingFactor={0.045}
 
-        rotateSpeed={0.52}
-        zoomSpeed={0.55}
+        rotateSpeed={0.55}
 
-        autoRotate
-        autoRotateSpeed={0.34}
+        zoomSpeed={0.58}
+
+        minDistance={3.2}
+
+        maxDistance={5.8}
 
         minPolarAngle={
-          Math.PI * 0.12
+          Math.PI * 0.2
         }
 
         maxPolarAngle={
-          Math.PI * 0.88
+          Math.PI * 0.8
         }
 
-        onStart={onInteractionStart}
-        onEnd={onInteractionEnd}
+        autoRotate={
+          !interacting
+        }
+
+        autoRotateSpeed={0.42}
+
+        onStart={
+          onInteractionStart
+        }
+
+        onEnd={
+          onInteractionEnd
+        }
+
+        touches={{
+          ONE:
+            THREE.TOUCH.ROTATE,
+
+          TWO:
+            THREE.TOUCH.DOLLY_PAN,
+        }}
       />
     </>
   );
 }
 
-/*
-=====================================================
-MAIN COMPONENT
-=====================================================
-*/
+
+/* =====================================================
+   MAIN GLOBAL EDITION
+===================================================== */
 
 export default function GlobalEdition({
-  projects,
+  projects = [],
   onOpen,
 }) {
   const sectionRef =
     useRef(null);
 
-  const resumeTimerRef =
+  const resumeTimer =
     useRef(null);
 
-  const [visible, setVisible] =
-    useState(false);
 
-  const [interacting, setInteracting] =
-    useState(false);
+  const [
+    visible,
+    setVisible,
+  ] = useState(false);
 
-  const [selectedProject, setSelectedProject] =
-    useState(null);
 
-  /*
-  -----------------------------------------------
-  Only render the expensive WebGL scene when
-  the section is near the viewport.
-  -----------------------------------------------
-  */
+  const [
+    interacting,
+    setInteracting,
+  ] = useState(false);
+
+
+  const [
+    hoveredProject,
+    setHoveredProject,
+  ] = useState(null);
+
+
+  /* ================================================
+     ONLY RENDER THREE.JS WHEN NEAR VIEWPORT
+  ================================================ */
 
   useEffect(() => {
     const element =
@@ -490,6 +903,7 @@ export default function GlobalEdition({
       return undefined;
     }
 
+
     const observer =
       new IntersectionObserver(
         ([entry]) => {
@@ -498,282 +912,389 @@ export default function GlobalEdition({
           );
         },
         {
-          rootMargin:
-            "300px 0px",
-          threshold: 0.01,
+          rootMargin: "300px",
+          threshold: 0.05,
         }
       );
 
+
     observer.observe(element);
+
 
     return () => {
       observer.disconnect();
     };
   }, []);
 
-  /*
-  -----------------------------------------------
-  Cleanup interaction timer.
-  -----------------------------------------------
-  */
+
+  /* ================================================
+     CLEANUP
+  ================================================ */
 
   useEffect(() => {
     return () => {
-      if (resumeTimerRef.current) {
-        window.clearTimeout(
-          resumeTimerRef.current
-        );
-      }
-
       document.body.style.cursor =
         "";
+
+      if (resumeTimer.current) {
+        window.clearTimeout(
+          resumeTimer.current
+        );
+      }
     };
   }, []);
 
-  /*
-  -----------------------------------------------
-  Project locations.
-  Uses existing project objects.
-  -----------------------------------------------
-  */
 
-  const globeProjects = useMemo(
-    () =>
-      projects.filter(
-        (project) =>
-          project.location &&
-          Number.isFinite(
-            project.location.lat
-          ) &&
-          Number.isFinite(
-            project.location.lng
-          )
-      ),
-    [projects]
-  );
+  /* ================================================
+     MANUAL INTERACTION START
+  ================================================ */
 
   const handleInteractionStart =
     () => {
-      if (resumeTimerRef.current) {
+      if (resumeTimer.current) {
         window.clearTimeout(
-          resumeTimerRef.current
+          resumeTimer.current
         );
       }
 
       setInteracting(true);
     };
 
+
+  /* ================================================
+     MANUAL INTERACTION END
+  ================================================ */
+
   const handleInteractionEnd =
     () => {
-      if (resumeTimerRef.current) {
+      if (resumeTimer.current) {
         window.clearTimeout(
-          resumeTimerRef.current
+          resumeTimer.current
         );
       }
 
-      /*
-      Keep auto-rotation paused very
-      briefly after release so the globe
-      doesn't immediately "snap" back.
-      */
 
-      resumeTimerRef.current =
+      resumeTimer.current =
         window.setTimeout(() => {
           setInteracting(false);
-        }, 900);
+        }, 650);
     };
 
-  const handleProjectOpen =
-    (project) => {
-      setSelectedProject(project);
 
-      onOpen(project);
-    };
+  /* ================================================
+     PROJECTS WITH LOCATIONS
+  ================================================ */
+
+  const locatedProjects =
+    useMemo(
+      () =>
+        projects.filter(
+          (project) =>
+            project.location
+        ),
+      [projects]
+    );
+
 
   return (
     <section
       ref={sectionRef}
       id="global-edition"
-      className="global-edition reveal"
-      aria-labelledby="global-edition-title"
+      className="global-edition"
     >
+
       <div className="global-edition-frame">
-        {/* -----------------------------------------
+
+        {/* ======================================
             HEADER
-        ----------------------------------------- */}
+        ====================================== */}
 
         <header className="global-edition-header">
-          <div>
-            <span className="global-edition-kicker">
-              SPECIAL FEATURE / DIGITAL EDITION
-            </span>
 
-            <h2 id="global-edition-title">
-              GLOBAL EDITION
+          <div>
+
+            <p className="global-edition-kicker">
+              02 / GLOBAL EDITION
+            </p>
+
+
+            <h2>
+              Projects, ideas & digital work
+              <span>
+                {" "}
+                across the map.
+              </span>
             </h2>
+
           </div>
 
-          <p>
-            Projects, ideas &amp; digital
-            work across the map.
-          </p>
+
+          <div className="global-edition-status">
+
+            <span className="global-status-dot" />
+
+            LIVE / DIGITAL ATLAS
+
+          </div>
+
         </header>
 
-        {/* -----------------------------------------
-            GLOBE + CAPTION
-        ----------------------------------------- */}
+
+        {/* ======================================
+            MAIN LAYOUT
+        ====================================== */}
 
         <div className="global-edition-layout">
-          <div className="global-edition-stage">
-            <div className="global-edition-canvas">
-              {visible ? (
-                <Canvas
-                  camera={{
-                    position: [
-                      0,
-                      0,
-                      4.55,
-                    ],
-                    fov: 38,
-                  }}
-                  dpr={[
-                    1,
-                    1.5,
-                  ]}
-                  gl={{
-                    antialias: true,
-                    alpha: false,
-                    powerPreference:
-                      "high-performance",
-                  }}
-                  frameloop="always"
-                  onCreated={({
-                    gl,
-                  }) => {
-                    gl.outputColorSpace =
-                      THREE.SRGBColorSpace;
 
-                    gl.toneMapping =
-                      THREE.ACESFilmicToneMapping;
-                  }}
-                >
+          {/* ====================================
+              GLOBE
+          ==================================== */}
+
+          <div className="global-edition-stage">
+
+            <div className="global-edition-stage-top">
+
+              <span>
+                EARTH / 001
+              </span>
+
+              <span>
+                {
+                  interacting
+                    ? "MANUAL CONTROL"
+                    : "AUTO ROTATION"
+                }
+              </span>
+
+            </div>
+
+
+            {visible ? (
+              <Canvas
+                className="global-edition-canvas"
+
+                camera={{
+                  position: [
+                    0,
+                    0.15,
+                    4.45,
+                  ],
+
+                  fov: 38,
+                }}
+
+                dpr={[1, 1.5]}
+
+                gl={{
+                  antialias: true,
+                  alpha: false,
+                  powerPreference:
+                    "high-performance",
+                }}
+
+                onPointerMissed={() =>
+                  setHoveredProject(
+                    null
+                  )
+                }
+              >
+
+                <Suspense fallback={null}>
+
                   <GlobeScene
                     projects={
-                      globeProjects
+                      locatedProjects
                     }
-                    onOpen={
-                      handleProjectOpen
+
+                    onOpen={onOpen}
+
+                    interacting={
+                      interacting
                     }
+
                     onInteractionStart={
                       handleInteractionStart
                     }
+
                     onInteractionEnd={
                       handleInteractionEnd
                     }
+
+                    hoveredProject={
+                      hoveredProject
+                    }
+
+                    setHoveredProject={
+                      setHoveredProject
+                    }
                   />
-                </Canvas>
-              ) : (
-                <div className="global-edition-idle">
-                  <span>
-                    GLOBAL EDITION
-                  </span>
 
-                  <small>
-                    ENTERING ORBIT…
-                  </small>
-                </div>
-              )}
+                </Suspense>
 
-              {/* Interaction hints */}
-              <div className="global-edition-controls">
-                <span>
-                  DRAG TO ROTATE
-                </span>
+              </Canvas>
+            ) : (
+              <div className="global-edition-placeholder">
 
                 <span>
-                  SCROLL / PINCH TO ZOOM
+                  LOADING ATLAS
                 </span>
+
               </div>
+            )}
 
-              {interacting && (
-                <div className="global-edition-interacting">
-                  MANUAL ORBIT
-                </div>
-              )}
+
+            <div className="global-edition-controls">
+
+              <span>
+                DRAG TO ROTATE
+              </span>
+
+              <span>
+                SCROLL TO ZOOM
+              </span>
+
+              <span>
+                CLICK A MARKER
+              </span>
+
             </div>
+
           </div>
 
+
+          {/* ====================================
+              CAPTION / PROJECT INDEX
+          ==================================== */}
+
           <aside className="global-edition-caption">
+
             <div className="global-edition-caption-top">
+
               <span>
-                FIG. 06
+                FIELD NOTES
               </span>
 
               <span>
-                {globeProjects.length
-                  .toString()
-                  .padStart(2, "0")}{" "}
-                SIGNALS
+                2026
               </span>
+
             </div>
 
-            <div>
-              <p className="global-edition-caption-title">
-                FROM CHANDIGARH TO THE
-                DIGITAL WORLD
+
+            <div className="global-edition-caption-main">
+
+              <p className="global-edition-location">
+                ORIGIN POINT
               </p>
+
+
+              <h3>
+                FROM
+                <br />
+                CHANDIGARH
+                <br />
+                TO THE
+                <br />
+                DIGITAL WORLD.
+              </h3>
+
 
               <p className="global-edition-caption-copy">
-                A visual map of the
-                places and ideas connected
-                to the projects in this
-                edition. Each signal marks
-                a project in the portfolio.
-                Select one to open its
-                existing project story.
+                A visual map of selected
+                work, experiments and
+                ideas — connected by one
+                digital workspace and built
+                from Chandigarh.
               </p>
+
             </div>
 
-            <div className="global-edition-location">
+
+            <div className="global-edition-project-list">
+
+              {locatedProjects.map(
+                (project) => (
+                  <button
+                    key={project.id}
+                    type="button"
+
+                    className={
+                      hoveredProject?.id ===
+                      project.id
+                        ? "is-active"
+                        : ""
+                    }
+
+                    onMouseEnter={() =>
+                      setHoveredProject(
+                        project
+                      )
+                    }
+
+                    onMouseLeave={() =>
+                      setHoveredProject(
+                        null
+                      )
+                    }
+
+                    onFocus={() =>
+                      setHoveredProject(
+                        project
+                      )
+                    }
+
+                    onBlur={() =>
+                      setHoveredProject(
+                        null
+                      )
+                    }
+
+                    onClick={() =>
+                      onOpen?.(project)
+                    }
+                  >
+
+                    <span>
+                      {project.number}
+                    </span>
+
+                    <strong>
+                      {project.title}
+                    </strong>
+
+                    <small>
+                      {
+                        project
+                          .location
+                          .label
+                      }
+                    </small>
+
+                  </button>
+                )
+              )}
+
+            </div>
+
+
+            <div className="global-edition-footer">
+
               <span>
-                ACTIVE SIGNAL
+                EXPLORE THE WORK
               </span>
 
-              <strong>
-                {selectedProject
-                  ? selectedProject.title
-                  : "PORTFOLIO / GLOBAL INDEX"}
-              </strong>
+              <span>
+                →
+              </span>
 
-              <small>
-                {selectedProject?.location
-                  ?.label ||
-                  "CHANDIGARH · INDIA"}
-              </small>
             </div>
+
           </aside>
+
         </div>
 
-        {/* -----------------------------------------
-            FOOTER
-        ----------------------------------------- */}
-
-        <footer className="global-edition-footer">
-          <span>
-            THE SAURABH TIMES /
-            CARTOGRAPHY DESK
-          </span>
-
-          <span>
-            INTERACTIVE DIGITAL FEATURE
-          </span>
-
-          <span>
-            {globeProjects.length} PROJECT
-            SIGNALS
-          </span>
-        </footer>
       </div>
+
     </section>
   );
 }

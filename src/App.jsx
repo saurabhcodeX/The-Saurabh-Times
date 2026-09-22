@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useState,
@@ -12,13 +14,16 @@ import {
 
 import CustomCursor from "./components/CustomCursor";
 import ProjectStory from "./components/ProjectStory";
-import GlobalEdition from "./components/GlobalEdition";
 
 import portraitImg from "./assets/portrait.jpg";
 
 import { projects } from "./data/projects";
 
 import "./index.css";
+
+const GlobalEdition = lazy(
+  () => import("./components/GlobalEdition")
+);
 
 
 /* =====================================================
@@ -57,12 +62,10 @@ function Header({ onPrint }) {
         <button
           type="button"
           className="masthead-title masthead-button"
-          onClick={() =>
-            window.scrollTo({
-              top: 0,
-              behavior: "smooth",
-            })
-          }
+          onClick={() => window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          })}
         >
           THE SAURABH TIMES
         </button>
@@ -105,77 +108,37 @@ function Header({ onPrint }) {
 
       </div>
 
-
       <div className="mobile-menu-row">
-
         <button
           type="button"
           className={`mobile-menu-button${menuOpen ? " active" : ""}`}
           onClick={() => setMenuOpen((open) => !open)}
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
-          aria-label={
-            menuOpen
-              ? "Close navigation"
-              : "Open navigation"
-          }
+          aria-label={menuOpen ? "Close navigation" : "Open navigation"}
         >
           <span />
           <span />
         </button>
-
       </div>
 
-
       {menuOpen && (
-        <nav
-          className="mobile-nav"
-          id="mobile-navigation"
-          aria-label="Mobile navigation"
-        >
-
-          <button
-            type="button"
-            onClick={() => scrollToSection("work")}
-          >
+        <nav className="mobile-nav" id="mobile-navigation" aria-label="Mobile navigation">
+          <button type="button" onClick={() => scrollToSection("work")}>
             01 / SELECTED WORK
           </button>
-
-          <button
-            type="button"
-            onClick={() => scrollToSection("global-edition")}
-          >
-            02 / GLOBAL EDITION
+          <button type="button" onClick={() => scrollToSection("about")}>
+            02 / ABOUT
           </button>
-
-          <button
-            type="button"
-            onClick={() => scrollToSection("about")}
-          >
-            03 / ABOUT
+          <button type="button" onClick={() => scrollToSection("archive")}>
+            03 / ARCHIVE
           </button>
-
-          <button
-            type="button"
-            onClick={() => scrollToSection("archive")}
-          >
-            04 / ARCHIVE
+          <button type="button" onClick={() => scrollToSection("contact")}>
+            04 / CONTACT
           </button>
-
-          <button
-            type="button"
-            onClick={() => scrollToSection("contact")}
-          >
-            05 / CONTACT
+          <button type="button" onClick={onPrint}>
+            05 / PRINT EDITION
           </button>
-
-          <button
-            type="button"
-            onClick={onPrint}
-          >
-            06 / PRINT EDITION
-          </button>
-
         </nav>
       )}
 
@@ -1085,7 +1048,7 @@ export default function App() {
 
   /* -----------------------------------------------
      Native print
-
+     
      The actual newspaper transformation is handled
      by @media print in index.css.
   ------------------------------------------------ */
@@ -1182,18 +1145,23 @@ export default function App() {
         <Ticker />
 
 
-        {/* =================================================
-            GLOBAL EDITION
-
-            Uses the SAME projects array.
-            Marker click -> existing ProjectStory.
-            No duplicate project data.
-        ================================================= */}
-
-        <GlobalEdition
-          projects={projects}
-          onOpen={openProject}
-        />
+        <Suspense
+          fallback={
+            <section className="global-edition global-edition-loading">
+              <div className="global-edition-frame">
+                <div className="global-edition-loading-inner">
+                  <span>02 / GLOBAL EDITION</span>
+                  <strong>PREPARING THE ATLAS...</strong>
+                </div>
+              </div>
+            </section>
+          }
+        >
+          <GlobalEdition
+            projects={projects}
+            onOpen={openProject}
+          />
+        </Suspense>
 
 
         <FeaturedWork
