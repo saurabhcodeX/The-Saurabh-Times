@@ -21,10 +21,10 @@ import { projects } from "./data/projects";
 
 import "./index.css";
 
+
 const GlobalEdition = lazy(
   () => import("./components/GlobalEdition")
 );
-
 /* =====================================================
    HEADER
 ===================================================== */

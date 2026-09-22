@@ -3720,3 +3720,600 @@ button,
 @media (max-width:800px){ .global-mini-section{margin:42px auto}.global-mini-box{width:min(100%,470px);height:300px}.global-mini-globe{width:245px;height:245px} }
 @media (max-width:520px){ .global-mini-section{width:calc(100% - 30px);margin:34px auto}.global-mini-box{width:100%;height:265px;border-radius:13px}.global-mini-top{top:14px;left:15px;right:15px;font-size:7px}.global-mini-globe{width:210px;height:210px;top:50%}.global-mini-bottom{left:15px;right:15px;bottom:14px}.global-mini-copy strong{font-size:7px}.global-mini-hint{font-size:5px} }
 @media (max-width:360px){ .global-mini-box{height:245px}.global-mini-globe{width:190px;height:190px}.global-mini-bottom{padding-top:8px} }
+/* =========================================================
+   MINI GLOBAL EDITION — FIXED CIRCULAR GLOBE
+   ========================================================= */
+
+.global-mini-section {
+  width: var(--page);
+  margin: 48px auto 56px;
+}
+
+
+/* =========================================================
+   MAIN CARD
+   ========================================================= */
+
+.global-mini-box {
+  position: relative;
+
+  width: min(100%, 760px);
+
+  min-height: 315px;
+
+  margin: 0 auto;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(17, 17, 17, 0.34);
+
+  background: var(--paper-light);
+
+  color: var(--ink);
+
+  box-shadow:
+    0 18px 45px rgba(17, 17, 17, 0.08);
+}
+
+
+/* Inner newspaper border */
+
+.global-mini-box::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 7px;
+
+  border: 1px solid rgba(17, 17, 17, 0.08);
+
+  pointer-events: none;
+
+  z-index: 8;
+}
+
+
+/* =========================================================
+   TOP META
+   ========================================================= */
+
+.global-mini-meta {
+  position: relative;
+
+  z-index: 10;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr auto 1fr;
+
+  align-items: center;
+
+  min-height: 38px;
+
+  padding: 0 18px;
+
+  border-bottom:
+    1px solid var(--line-strong);
+
+  font-family: var(--sans);
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.18em;
+
+  text-transform: uppercase;
+}
+
+
+.global-mini-meta span:nth-child(2) {
+  font-family: var(--serif);
+
+  font-size: 10px;
+
+  letter-spacing: 0.2em;
+}
+
+
+.global-mini-meta span:last-child {
+  text-align: right;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.global-mini-content {
+  position: relative;
+
+  min-height: 235px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 0.8fr)
+    minmax(300px, 1.2fr);
+
+  align-items: center;
+}
+
+
+/* =========================================================
+   LEFT EDITORIAL
+   ========================================================= */
+
+.global-mini-editorial {
+  position: relative;
+
+  z-index: 5;
+
+  padding:
+    26px
+    0
+    24px
+    28px;
+}
+
+
+.global-mini-kicker {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-family: var(--sans);
+
+  font-size: 7px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.18em;
+}
+
+
+.global-mini-editorial h2 {
+  margin: 0;
+
+  font-family: var(--serif);
+
+  font-size:
+    clamp(42px, 6vw, 68px);
+
+  font-weight: 700;
+
+  line-height: 0.82;
+
+  letter-spacing: -0.055em;
+
+  text-transform: uppercase;
+}
+
+
+.global-mini-editorial h2 span {
+  color: var(--red);
+}
+
+
+.global-mini-rule {
+  width: 54px;
+
+  height: 4px;
+
+  margin:
+    18px
+    0
+    12px;
+
+  background: var(--red);
+}
+
+
+.global-mini-editorial p {
+  max-width: 190px;
+
+  margin: 0;
+
+  font-family: var(--serif);
+
+  font-size: 13px;
+
+  line-height: 1.15;
+}
+
+
+/* =========================================================
+   GLOBE OUTER ORBIT
+   ========================================================= */
+
+.global-mini-orbit {
+  position: relative;
+
+  width: 290px;
+
+  height: 290px;
+
+  justify-self: center;
+
+  display: grid;
+
+  place-items: center;
+}
+
+
+/* Outer solid circle */
+
+.global-mini-orbit::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 7px;
+
+  border:
+    1px solid
+    rgba(17, 17, 17, 0.42);
+
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+
+/* Inner dashed circle */
+
+.global-mini-orbit::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 23px;
+
+  border:
+    1px dashed
+    rgba(17, 17, 17, 0.18);
+
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   GLOBE CIRCULAR VIEWPORT
+   ========================================================= */
+
+.global-mini-circle {
+  position: relative;
+
+  width: 252px;
+
+  height: 252px;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 48% 42%,
+      rgba(71, 145, 214, 0.14),
+      transparent 62%
+    ),
+    #05080d;
+
+  box-shadow:
+    0 16px 32px
+      rgba(17, 17, 17, 0.18),
+    inset 0 0 32px
+      rgba(255, 255, 255, 0.04);
+
+  isolation: isolate;
+
+  touch-action: none;
+
+  cursor: grab;
+}
+
+
+.global-mini-circle:active {
+  cursor: grabbing;
+}
+
+
+/* Globe edge highlight */
+
+.global-mini-circle::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  border-radius: 50%;
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(255, 255, 255, 0.15);
+
+  pointer-events: none;
+
+  z-index: 5;
+}
+
+
+/* Canvas */
+
+.global-mini-circle canvas {
+  display: block;
+
+  width: 100% !important;
+
+  height: 100% !important;
+}
+
+
+/* =========================================================
+   ORBIT DOTS
+   ========================================================= */
+
+.global-mini-orbit-dot {
+  position: absolute;
+
+  top: 50%;
+
+  width: 6px;
+
+  height: 6px;
+
+  margin-top: -3px;
+
+  border-radius: 50%;
+
+  background: var(--ink);
+
+  z-index: 6;
+}
+
+
+.global-mini-orbit-dot-left {
+  left: 0;
+}
+
+
+.global-mini-orbit-dot-right {
+  right: 0;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.global-mini-footer {
+  position: relative;
+
+  z-index: 10;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr auto 1fr;
+
+  align-items: center;
+
+  min-height: 39px;
+
+  padding: 0 18px;
+
+  border-top:
+    1px solid var(--line-strong);
+
+  font-family: var(--sans);
+
+  font-size: 6px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.15em;
+
+  text-transform: uppercase;
+}
+
+
+.global-mini-footer strong {
+  font-family: var(--serif);
+
+  font-size: 8px;
+
+  letter-spacing: 0.2em;
+}
+
+
+.global-mini-footer span:last-child {
+  text-align: right;
+
+  color: var(--red);
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .global-mini-section {
+    margin:
+      40px
+      auto
+      46px;
+  }
+
+
+  .global-mini-box {
+    width: min(100%, 520px);
+  }
+
+
+  .global-mini-content {
+    grid-template-columns:
+      0.78fr
+      1.22fr;
+  }
+
+
+  .global-mini-editorial {
+    padding-left: 20px;
+  }
+
+
+  .global-mini-orbit {
+    width: 250px;
+
+    height: 250px;
+  }
+
+
+  .global-mini-circle {
+    width: 220px;
+
+    height: 220px;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .global-mini-section {
+    width:
+      calc(100% - 28px);
+
+    margin:
+      34px
+      auto
+      40px;
+  }
+
+
+  .global-mini-box {
+    min-height: 370px;
+  }
+
+
+  .global-mini-meta {
+    padding: 0 13px;
+
+    font-size: 6px;
+  }
+
+
+  .global-mini-meta span:nth-child(2) {
+    font-size: 8px;
+  }
+
+
+  .global-mini-content {
+    min-height: 292px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+  }
+
+
+  .global-mini-editorial {
+    width: 100%;
+
+    padding:
+      18px
+      18px
+      0;
+  }
+
+
+  .global-mini-editorial h2 {
+    font-size: 38px;
+  }
+
+
+  .global-mini-editorial p {
+    display: none;
+  }
+
+
+  .global-mini-rule {
+    margin:
+      10px
+      0
+      0;
+
+    height: 3px;
+  }
+
+
+  .global-mini-orbit {
+    width: 220px;
+
+    height: 220px;
+
+    margin-top: -4px;
+  }
+
+
+  .global-mini-circle {
+    width: 190px;
+
+    height: 190px;
+  }
+
+
+  .global-mini-orbit::before {
+    inset: 5px;
+  }
+
+
+  .global-mini-orbit::after {
+    inset: 18px;
+  }
+
+
+  .global-mini-footer {
+    min-height: 40px;
+
+    padding: 0 13px;
+
+    font-size: 5px;
+  }
+
+
+  .global-mini-footer strong {
+    font-size: 6px;
+  }
+}
+
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+
+  .global-mini-section {
+    break-inside: avoid;
+  }
+
+
+  .global-mini-circle {
+    -webkit-print-color-adjust: exact;
+
+    print-color-adjust: exact;
+  }
+}
