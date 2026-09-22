@@ -32,6 +32,12 @@ export const projects = [
       "https://github.com/saurabhcodeX/WeatherPulse",
 
     research: false,
+
+    location: {
+      label: "CHANDIGARH · INDIA",
+      lat: 30.7333,
+      lng: 76.7794,
+    },
   },
 
   {
@@ -67,6 +73,12 @@ export const projects = [
       "https://github.com/saurabhcodeX/Sanchar-Sarthi",
 
     research: false,
+
+    location: {
+      label: "CHANDIGARH · INDIA",
+      lat: 30.7333,
+      lng: 76.7794,
+    },
   },
 
   {
@@ -102,6 +114,12 @@ export const projects = [
       "https://github.com/saurabhcodeX/techcadd-website",
 
     research: false,
+
+    location: {
+      label: "MOHALI · INDIA",
+      lat: 30.7046,
+      lng: 76.7179,
+    },
   },
 
   {
@@ -131,9 +149,16 @@ export const projects = [
       "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80",
 
     live: null,
+
     github: null,
 
     research: false,
+
+    location: {
+      label: "CHANDIGARH · INDIA",
+      lat: 30.7440,
+      lng: 76.7940,
+    },
   },
 
   {
@@ -164,8 +189,15 @@ export const projects = [
       "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=1600&q=80",
 
     live: null,
+
     github: null,
 
     research: true,
+
+    location: {
+      label: "CHANDIGARH · INDIA",
+      lat: 30.7210,
+      lng: 76.7620,
+    },
   },
 ];
