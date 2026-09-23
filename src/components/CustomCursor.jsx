@@ -50,34 +50,42 @@ export default function CustomCursor() {
       dotRef.current?.classList.remove("cursor-hover-dot");
     };
 
+    // Delegated listeners on `document` instead of a one-time
+    // querySelectorAll snapshot. The old version only found
+    // elements that existed at mount, so buttons inside the
+    // project-story modal (opened later) and the lazy-loaded
+    // globe never got the hover cursor effect.
+    const interactiveSelector =
+      "a, button, .project-row, .archive-row";
+
+    const handlePointerOver = (e) => {
+      if (e.target.closest(interactiveSelector)) {
+        handleEnter();
+      }
+    };
+
+    const handlePointerOut = (e) => {
+      if (e.target.closest(interactiveSelector)) {
+        handleLeave();
+      }
+    };
+
     window.addEventListener("mousemove", move);
-
-    const interactiveElements =
-      document.querySelectorAll(
-        "a, button, .project-row, .archive-row"
-      );
-
-    interactiveElements.forEach((element) => {
-      element.addEventListener("mouseenter", handleEnter);
-      element.addEventListener("mouseleave", handleLeave);
-    });
+    document.addEventListener("pointerover", handlePointerOver);
+    document.addEventListener("pointerout", handlePointerOut);
 
     animate();
 
     return () => {
       window.removeEventListener("mousemove", move);
-
-      interactiveElements.forEach((element) => {
-        element.removeEventListener(
-          "mouseenter",
-          handleEnter
-        );
-
-        element.removeEventListener(
-          "mouseleave",
-          handleLeave
-        );
-      });
+      document.removeEventListener(
+        "pointerover",
+        handlePointerOver
+      );
+      document.removeEventListener(
+        "pointerout",
+        handlePointerOut
+      );
     };
   }, []);
 

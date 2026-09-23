@@ -7,7 +7,7 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 
-const EARTH_RADIUS = 1.42;
+const EARTH_RADIUS = 1.48;
 
 const EARTH_TEXTURE =
   "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r186/examples/textures/planets/earth_atmos_2048.jpg";
@@ -29,26 +29,32 @@ const EARTH_CLOUDS =
 function Atmosphere() {
   return (
     <>
-      <mesh scale={1.055}>
-        <sphereGeometry args={[EARTH_RADIUS, 64, 48]} />
+      {/* Main blue atmospheric rim */}
+      <mesh scale={1.045}>
+        <sphereGeometry
+          args={[EARTH_RADIUS, 96, 64]}
+        />
 
         <meshBasicMaterial
-          color="#4d9cff"
+          color="#35a9ff"
           transparent
-          opacity={0.09}
+          opacity={0.16}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
         />
       </mesh>
 
+      {/* Outer soft glow */}
       <mesh scale={1.085}>
-        <sphereGeometry args={[EARTH_RADIUS, 64, 48]} />
+        <sphereGeometry
+          args={[EARTH_RADIUS, 96, 64]}
+        />
 
         <meshBasicMaterial
-          color="#86c5ff"
+          color="#63c4ff"
           transparent
-          opacity={0.035}
+          opacity={0.055}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
@@ -76,18 +82,28 @@ function EarthSurface() {
   return (
     <mesh>
       <sphereGeometry
-        args={[EARTH_RADIUS, 96, 64]}
+        args={[EARTH_RADIUS, 128, 80]}
       />
 
       <meshStandardMaterial
         map={day}
         normalMap={normal}
-        normalScale={new THREE.Vector2(0.55, 0.55)}
-        roughness={0.88}
+
+        normalScale={
+          new THREE.Vector2(0.38, 0.38)
+        }
+
+        roughness={0.76}
         metalness={0}
-        emissive={new THREE.Color("#ff9d42")}
+
+        /* Subtle city lights */
+        emissive={
+          new THREE.Color("#ffb35a")
+        }
+
         emissiveMap={lights}
-        emissiveIntensity={0.72}
+
+        emissiveIntensity={0.38}
       />
     </mesh>
   );
@@ -106,24 +122,25 @@ function CloudLayer() {
   clouds.colorSpace = THREE.SRGBColorSpace;
 
   useFrame((_, delta) => {
-    if (cloudRef.current) {
-      cloudRef.current.rotation.y += delta * 0.006;
-    }
+    if (!cloudRef.current) return;
+
+    cloudRef.current.rotation.y +=
+      delta * 0.008;
   });
 
   return (
     <mesh
       ref={cloudRef}
-      scale={1.012}
+      scale={1.014}
     >
       <sphereGeometry
-        args={[EARTH_RADIUS, 96, 64]}
+        args={[EARTH_RADIUS, 128, 80]}
       />
 
       <meshPhongMaterial
         map={clouds}
         transparent
-        opacity={0.16}
+        opacity={0.10}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
       />
@@ -140,107 +157,132 @@ function Earth() {
   const earthRef = useRef(null);
 
   useFrame((_, delta) => {
-    if (earthRef.current) {
-      earthRef.current.rotation.y += delta * 0.045;
-    }
+    if (!earthRef.current) return;
+
+    earthRef.current.rotation.y +=
+      delta * 0.032;
   });
 
   return (
     <group ref={earthRef}>
+
       <EarthSurface />
 
       <CloudLayer />
 
       <Atmosphere />
+
     </group>
   );
 }
 
 
 /* =========================================================
-   THREE.JS SCENE
+   GLOBE SCENE
    ========================================================= */
 
 function GlobeScene() {
   return (
     <>
-      {/* Lighting */}
 
-      <ambientLight intensity={0.34} />
-
-      <directionalLight
-        position={[-4, 2.5, 5]}
-        intensity={2.7}
-      />
-
-      <directionalLight
-        position={[3, -1, -4]}
-        intensity={0.35}
+      {/* Soft base light */}
+      <ambientLight
+        intensity={0.52}
       />
 
 
-      {/* Stars */}
+      {/* Main sunlight */}
+      <directionalLight
+        position={[-4, 3, 5]}
+        intensity={3.8}
+      />
+
+
+      {/* Soft blue fill */}
+      <directionalLight
+        position={[4, -1, -3]}
+        intensity={0.22}
+        color="#6dbbff"
+      />
+
+
+      {/* Small warm sunlight */}
+      <pointLight
+        position={[-4, 1, 4]}
+        intensity={0.55}
+        color="#fff0d0"
+      />
+
+
+      {/* =================================================
+          SPACE / SKY
+          ================================================= */}
 
       <Stars
-        radius={8}
-        depth={5}
-        count={650}
+        radius={9}
+        depth={7}
+        count={1100}
         factor={1.35}
         saturation={0}
         fade
-        speed={0.12}
+        speed={0.08}
       />
 
 
       {/* Earth */}
-
       <Earth />
 
 
-      {/* Mouse / Touch Controls */}
+      {/* =================================================
+          INTERACTION
+          ================================================= */}
 
       <OrbitControls
         makeDefault
 
         enablePan={false}
 
-        enableZoom={true}
-
         enableRotate={true}
+
+        enableZoom={true}
 
         enableDamping={true}
 
         dampingFactor={0.055}
 
-        rotateSpeed={0.48}
+        rotateSpeed={0.42}
 
-        zoomSpeed={0.38}
-
-        /*
-         * Keeps the globe large.
-         * User cannot zoom so far out that
-         * the Earth becomes tiny.
-         */
-
-        minDistance={2.55}
-
-        maxDistance={3.08}
+        zoomSpeed={0.30}
 
         /*
-         * Prevent extreme vertical rotation.
+         * Don't allow the Earth
+         * to become too small.
          */
 
-        minPolarAngle={Math.PI * 0.29}
+        minDistance={2.62}
 
-        maxPolarAngle={Math.PI * 0.71}
+        maxDistance={3.15}
+
+        /*
+         * Vertical rotation limits.
+         */
+
+        minPolarAngle={
+          Math.PI * 0.25
+        }
+
+        maxPolarAngle={
+          Math.PI * 0.75
+        }
       />
+
     </>
   );
 }
 
 
 /* =========================================================
-   GLOBAL EDITION COMPONENT
+   GLOBAL EDITION
    ========================================================= */
 
 export default function GlobalEdition() {
@@ -249,18 +291,28 @@ export default function GlobalEdition() {
       className="global-mini-section"
       aria-label="Global Edition"
     >
+
       <div className="global-mini-box">
 
+
         {/* =================================================
-            TOP META BAR
+            HEADER
             ================================================= */}
 
         <div className="global-mini-meta">
-          <span>03 / 06</span>
 
-          <span>GLOBAL EDITION</span>
+          <span>
+            03 / 06
+          </span>
 
-          <span>EST. 2026</span>
+          <span>
+            GLOBAL EDITION
+          </span>
+
+          <span>
+            EST. 2026
+          </span>
+
         </div>
 
 
@@ -270,7 +322,10 @@ export default function GlobalEdition() {
 
         <div className="global-mini-content">
 
-          {/* LEFT EDITORIAL */}
+
+          {/* =================================================
+              LEFT EDITORIAL
+              ================================================= */}
 
           <div className="global-mini-editorial">
 
@@ -278,34 +333,62 @@ export default function GlobalEdition() {
               A SMALL WORLD
             </span>
 
+
             <h2>
               BIG
               <br />
               IDEAS<span>.</span>
             </h2>
 
+
             <div className="global-mini-rule" />
 
+
             <p>
-              From Chandigarh to the digital world.
+              From Chandigarh to the
+              digital world.
             </p>
+
+
+            <div className="global-mini-location">
+
+              <span className="global-mini-location-dot" />
+
+              <span>
+                DIGITAL / GLOBAL / IMPACT
+              </span>
+
+            </div>
 
           </div>
 
 
-          {/* GLOBE */}
+          {/* =================================================
+              GLOBE
+              ================================================= */}
 
           <div className="global-mini-orbit">
+
+
+            <div className="global-mini-orbit-label">
+              LIVE PLANETARY VIEW
+            </div>
+
 
             <div className="global-mini-circle">
 
               <Canvas
                 camera={{
-                  position: [0, 0.05, 2.95],
+                  position: [
+                    0,
+                    0.02,
+                    3.05,
+                  ],
+
                   fov: 31,
                 }}
 
-                dpr={[1, 1.6]}
+                dpr={[1, 1.5]}
 
                 gl={{
                   antialias: true,
@@ -316,7 +399,9 @@ export default function GlobalEdition() {
               >
 
                 <Suspense fallback={null}>
+
                   <GlobeScene />
+
                 </Suspense>
 
               </Canvas>
@@ -324,7 +409,7 @@ export default function GlobalEdition() {
             </div>
 
 
-            {/* Decorative orbit dots */}
+            {/* Orbit dots */}
 
             <span
               className="
@@ -360,12 +445,13 @@ export default function GlobalEdition() {
           </strong>
 
           <span>
-            DRAG / ZOOM IN
+            DRAG / ZOOM / EXPLORE
           </span>
 
         </div>
 
       </div>
+
     </section>
   );
 }
