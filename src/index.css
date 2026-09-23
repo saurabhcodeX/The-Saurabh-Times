@@ -3429,6 +3429,65 @@ button,
    CONTENT
    ========================================================= */
 
+/* =========================================================
+   EDITORIAL ANNOTATIONS
+   ========================================================= */
+
+.global-mini-annotation {
+  position: absolute;
+
+  right: 22px;
+
+  z-index: 9;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 5px;
+
+  font-family: var(--sans);
+
+  font-size: 6px;
+
+  font-weight: 800;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: right;
+
+  color: rgba(17, 17, 17, 0.4);
+
+  pointer-events: none;
+}
+
+
+.global-mini-annotation-top {
+  top: 50px;
+}
+
+
+.global-mini-annotation-bottom {
+  bottom: 46px;
+}
+
+
+.global-mini-annotation-mark {
+  font-family: var(--serif);
+
+  font-size: 13px;
+  font-weight: 400;
+
+  letter-spacing: 0;
+  text-transform: none;
+
+  color: var(--red);
+}
+
+
 .global-mini-content {
   position: relative;
 
@@ -3441,6 +3500,8 @@ button,
     minmax(300px, 1.2fr);
 
   align-items: center;
+
+  padding: 36px 0 32px;
 }
 
 
@@ -3599,7 +3660,7 @@ button,
 .global-mini-orbit-label {
   position: absolute;
 
-  top: -4px;
+  top: -26px;
 
   left: 50%;
 
@@ -3611,14 +3672,31 @@ button,
 
   font-weight: 800;
 
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 
-  color: rgba(17, 17, 17, 0.4);
+  color: rgba(17, 17, 17, 0.42);
 
   white-space: nowrap;
 
   z-index: 6;
+}
+
+
+.global-mini-orbit-label::before {
+  content: "";
+
+  display: inline-block;
+
+  width: 4px;
+  height: 4px;
+
+  margin-right: 6px;
+  margin-bottom: 1px;
+
+  border-radius: 50%;
+
+  background: var(--red);
 }
 
 
@@ -3629,11 +3707,11 @@ button,
 
   position: absolute;
 
-  inset: 7px;
+  inset: 4px;
 
   border:
     1px solid
-    rgba(17, 17, 17, 0.42);
+    rgba(17, 17, 17, 0.5);
 
   border-radius: 50%;
 
@@ -3648,11 +3726,11 @@ button,
 
   position: absolute;
 
-  inset: 23px;
+  inset: 20px;
 
   border:
     1px dashed
-    rgba(17, 17, 17, 0.18);
+    rgba(17, 17, 17, 0.22);
 
   border-radius: 50%;
 
@@ -3860,6 +3938,11 @@ button,
     width: 220px;
 
     height: 220px;
+  }
+
+
+  .global-mini-annotation {
+    display: none;
   }
 }
 

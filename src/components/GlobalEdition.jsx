@@ -38,7 +38,7 @@ function Atmosphere() {
         <meshBasicMaterial
           color="#35a9ff"
           transparent
-          opacity={0.16}
+          opacity={0.24}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
@@ -46,7 +46,7 @@ function Atmosphere() {
       </mesh>
 
       {/* Outer soft glow */}
-      <mesh scale={1.085}>
+      <mesh scale={1.09}>
         <sphereGeometry
           args={[EARTH_RADIUS, 96, 64]}
         />
@@ -54,7 +54,7 @@ function Atmosphere() {
         <meshBasicMaterial
           color="#63c4ff"
           transparent
-          opacity={0.055}
+          opacity={0.08}
           side={THREE.BackSide}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
@@ -164,7 +164,7 @@ function Earth() {
   });
 
   return (
-    <group ref={earthRef}>
+    <group ref={earthRef} rotation={[0.12, 2.35, 0]}>
 
       <EarthSurface />
 
@@ -313,6 +313,23 @@ export default function GlobalEdition() {
             EST. 2026
           </span>
 
+        </div>
+
+
+        {/* =================================================
+            EDITORIAL ANNOTATIONS
+            ================================================= */}
+
+        <div className="global-mini-annotation global-mini-annotation-top">
+          <span>IDEAS TRAVEL</span>
+          <span>FASTER THAN</span>
+          <span>BORDERS</span>
+        </div>
+
+        <div className="global-mini-annotation global-mini-annotation-bottom">
+          <span className="global-mini-annotation-mark">✦</span>
+          <span>A WIDER</span>
+          <span>PERSPECTIVE</span>
         </div>
 
 
