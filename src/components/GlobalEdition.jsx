@@ -164,7 +164,7 @@ function Earth() {
   });
 
   return (
-    <group ref={earthRef} rotation={[0.12, 2.35, 0]}>
+    <group ref={earthRef}>
 
       <EarthSurface />
 
