@@ -3356,6 +3356,68 @@ button,
 
   box-shadow:
     0 18px 45px rgba(17, 17, 17, 0.08);
+
+  transition:
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+}
+
+
+.global-mini-box:hover {
+  box-shadow:
+    0 26px 60px rgba(17, 17, 17, 0.13);
+
+  transform: translateY(-3px);
+}
+
+
+/* Viewfinder corner ticks */
+
+.global-mini-corner {
+  position: absolute;
+
+  width: 13px;
+  height: 13px;
+
+  z-index: 12;
+
+  pointer-events: none;
+}
+
+
+.global-mini-corner-tl {
+  top: 8px;
+  left: 8px;
+
+  border-top: 1.5px solid var(--red);
+  border-left: 1.5px solid var(--red);
+}
+
+
+.global-mini-corner-tr {
+  top: 8px;
+  right: 8px;
+
+  border-top: 1.5px solid var(--red);
+  border-right: 1.5px solid var(--red);
+}
+
+
+.global-mini-corner-bl {
+  bottom: 8px;
+  left: 8px;
+
+  border-bottom: 1.5px solid var(--red);
+  border-left: 1.5px solid var(--red);
+}
+
+
+.global-mini-corner-br {
+  bottom: 8px;
+  right: 8px;
+
+  border-bottom: 1.5px solid var(--red);
+  border-right: 1.5px solid var(--red);
 }
 
 
@@ -3417,6 +3479,30 @@ button,
   font-size: 10px;
 
   letter-spacing: 0.2em;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+}
+
+
+.global-mini-meta-live {
+  display: inline-block;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: var(--red);
+
+  box-shadow: 0 0 6px rgba(157, 37, 29, 0.7);
+
+  animation: globalLocationPulse 2.2s ease-in-out infinite;
 }
 
 
@@ -3765,13 +3851,28 @@ button,
     0 16px 32px
       rgba(17, 17, 17, 0.18),
     inset 0 0 32px
-      rgba(255, 255, 255, 0.04);
+      rgba(255, 255, 255, 0.04),
+    0 0 70px 6px
+      rgba(53, 169, 255, 0.16);
 
   isolation: isolate;
 
   touch-action: none;
 
   cursor: grab;
+
+  transition: box-shadow 0.3s ease;
+}
+
+
+.global-mini-circle:hover {
+  box-shadow:
+    0 16px 32px
+      rgba(17, 17, 17, 0.2),
+    inset 0 0 32px
+      rgba(255, 255, 255, 0.05),
+    0 0 90px 10px
+      rgba(53, 169, 255, 0.24);
 }
 
 

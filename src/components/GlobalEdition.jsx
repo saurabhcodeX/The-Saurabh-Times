@@ -294,6 +294,11 @@ export default function GlobalEdition() {
 
       <div className="global-mini-box">
 
+        <span className="global-mini-corner global-mini-corner-tl" />
+        <span className="global-mini-corner global-mini-corner-tr" />
+        <span className="global-mini-corner global-mini-corner-bl" />
+        <span className="global-mini-corner global-mini-corner-br" />
+
 
         {/* =================================================
             HEADER
@@ -306,6 +311,7 @@ export default function GlobalEdition() {
           </span>
 
           <span>
+            <span className="global-mini-meta-live" />
             GLOBAL EDITION
           </span>
 
@@ -462,7 +468,7 @@ export default function GlobalEdition() {
           </strong>
 
           <span>
-            DRAG / ZOOM / EXPLORE
+            DRAG / ZOOM / EXPLORE ↗
           </span>
 
         </div>
